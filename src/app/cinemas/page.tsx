@@ -5,22 +5,24 @@ import Link from "next/link";
 import { Cinema } from "@/lib/types";
 import { MapPin, Phone, Sparkles, ChevronRight, Layers, Film } from "lucide-react";
 
+import { MOCK_CINEMAS } from "@/lib/client-mock-store";
+
 export default function CinemasPage() {
-  const [cinemas, setCinemas] = useState<Cinema[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [cinemas, setCinemas] = useState<Cinema[]>(MOCK_CINEMAS);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function loadCinemas() {
       try {
-        const res = await fetch("/api/cinemas");
-        if (res.ok) {
+        const res = await fetch("/api/cinemas").catch(() => null);
+        if (res && res.ok) {
           const data = await res.json();
-          setCinemas(data.cinemas || []);
+          if (data.cinemas && data.cinemas.length > 0) {
+            setCinemas(data.cinemas);
+          }
         }
       } catch (err) {
-        console.error("Load cinemas error:", err);
-      } finally {
-        setLoading(false);
+        console.warn("Using mock cinemas:", err);
       }
     }
     loadCinemas();

@@ -18,11 +18,13 @@ import {
   Play,
 } from "lucide-react";
 
+import { MOCK_MOVIES, MOCK_GENRES, MOCK_CINEMAS } from "@/lib/client-mock-store";
+
 export default function HomePage() {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [genres, setGenres] = useState<Genre[]>([]);
-  const [cinemas, setCinemas] = useState<Cinema[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [movies, setMovies] = useState<Movie[]>(MOCK_MOVIES);
+  const [genres, setGenres] = useState<Genre[]>(MOCK_GENRES);
+  const [cinemas, setCinemas] = useState<Cinema[]>(MOCK_CINEMAS);
+  const [loading, setLoading] = useState(false);
 
   // Filter States
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,22 +43,26 @@ export default function HomePage() {
     async function loadData() {
       try {
         const [moviesRes, cinemasRes] = await Promise.all([
-          fetch("/api/movies"),
-          fetch("/api/cinemas"),
+          fetch("/api/movies").catch(() => null),
+          fetch("/api/cinemas").catch(() => null),
         ]);
 
-        if (moviesRes.ok) {
+        if (moviesRes && moviesRes.ok) {
           const data = await moviesRes.json();
-          setMovies(data.movies || []);
-          setGenres(data.genres || []);
+          if (data.movies && data.movies.length > 0) {
+            setMovies(data.movies);
+            setGenres(data.genres || MOCK_GENRES);
+          }
         }
 
-        if (cinemasRes.ok) {
+        if (cinemasRes && cinemasRes.ok) {
           const cData = await cinemasRes.json();
-          setCinemas(cData.cinemas || []);
+          if (cData.cinemas && cData.cinemas.length > 0) {
+            setCinemas(cData.cinemas);
+          }
         }
       } catch (err) {
-        console.error("Home page load error:", err);
+        console.warn("Using static dataset:", err);
       } finally {
         setLoading(false);
       }

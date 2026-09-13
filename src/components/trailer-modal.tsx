@@ -7,10 +7,12 @@ interface TrailerModalProps {
   isOpen: boolean;
   onClose: () => void;
   trailerUrl: string;
-  title: string;
+  title?: string;
+  movieTitle?: string;
 }
 
-export function TrailerModal({ isOpen, onClose, trailerUrl, title }: TrailerModalProps) {
+export function TrailerModal({ isOpen, onClose, trailerUrl, title, movieTitle }: TrailerModalProps) {
+  const displayTitle = title || movieTitle || "Movie";
   if (!isOpen) return null;
 
   // Convert youtube watch URL to embed URL
@@ -27,7 +29,7 @@ export function TrailerModal({ isOpen, onClose, trailerUrl, title }: TrailerModa
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
       <div className="relative w-full max-w-4xl bg-surface-300 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl">
         <div className="flex items-center justify-between px-4 py-3 bg-surface-200 border-b border-slate-700">
-          <h3 className="text-sm font-bold text-white truncate">{title} - Official Trailer</h3>
+          <h3 className="text-sm font-bold text-white truncate">{displayTitle} - Official Trailer</h3>
           <button
             onClick={onClose}
             className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700"
